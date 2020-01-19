@@ -2,24 +2,96 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7001b105-738f-4096-8aa9-800ff15d297e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/csgoanalytics.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/json2sql.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/json2sql.py" beforeDir="false" afterPath="$PROJECT_DIR$/json2sql.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="PostgreSQL - postgres@localhost" type="feb32156:DbDataSourceImpl" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="PostgreSQL - postgres@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="databases" type="d4e8921:DatabaseStructure$FamilyGroup" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="PostgreSQL - postgres@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="databases" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="postgres: database" type="162271b6:PgImplModel$Database" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="PostgreSQL - postgres@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="databases" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="postgres: database" type="162271b6:PgImplModel$Database" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="PostgreSQL - postgres@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="databases" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="postgres: database" type="162271b6:PgImplModel$Database" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="public: schema" type="983ebcf7:PgImplModel$Schema" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="PostgreSQL - postgres@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="databases" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="postgres: database" type="162271b6:PgImplModel$Database" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="public: schema" type="983ebcf7:PgImplModel$Schema" />
+        <item name="entities: table" type="69fad909:PgImplModel$LocalTable" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="PostgreSQL - postgres@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="databases" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="postgres: database" type="162271b6:PgImplModel$Database" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="public: schema" type="983ebcf7:PgImplModel$Schema" />
+        <item name="headers: table" type="69fad909:PgImplModel$LocalTable" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="PostgreSQL - postgres@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="databases" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="postgres: database" type="162271b6:PgImplModel$Database" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="public: schema" type="983ebcf7:PgImplModel$Schema" />
+        <item name="snapshots: table" type="69fad909:PgImplModel$LocalTable" />
+      </path>
+    </expand>
+    <select />
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
+        <option value="Jupyter Notebook" />
       </list>
     </option>
   </component>
@@ -31,6 +103,11 @@
       <set>
         <option value="C:\Users\Weilin\Documents\GitHub\csgoanalytics\.idea" />
       </set>
+    </option>
+  </component>
+  <component name="JupyterTrust" id="a017f88d-ba5b-4a1e-a807-dda6a81eb02e">
+    <option name="files">
+      <option value="main.ipynb" />
     </option>
   </component>
   <component name="ProjectId" id="1WZtEzuRMKqjXg355ZltOSq30yN" />
@@ -45,10 +122,13 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="DatabaseDriversLRU" value="postgresql" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="full.screen.before.presentation.mode" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RunManager">
     <configuration name="json2sql" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -63,6 +143,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/json2sql.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -83,7 +164,27 @@
       <list>
         <serviceView>
           <treeState>
-            <expand />
+            <expand>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="root:PostgreSQL - postgres@localhost" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              </path>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="root:PostgreSQL - postgres@localhost" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+                <item name="com.intellij.database.console.session.MessageBusSession@51bd294e" type="9fbbdea:ServiceModel$ServiceNode" />
+              </path>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="root:PostgreSQL - postgres@localhost" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+                <item name="com.intellij.database.console.session.MessageBusSession@7c9d7286" type="9fbbdea:ServiceModel$ServiceNode" />
+              </path>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="root:PostgreSQL - postgres@localhost" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+                <item name="com.intellij.database.console.session.MessageBusSession@235d1271" type="9fbbdea:ServiceModel$ServiceNode" />
+              </path>
+            </expand>
             <select />
           </treeState>
         </serviceView>
@@ -100,33 +201,58 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1579368836551</updated>
+      <workItem from="1579371330880" duration="15440000" />
+      <workItem from="1579392539399" duration="1130000" />
+      <workItem from="1579393682697" duration="594000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
     <state x="1657" y="216" key="#Plugins" timestamp="1579368935103">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
     <state x="1657" y="216" key="#Plugins/0.0.2752.1112@0.0.2752.1112" timestamp="1579368935103" />
-    <state width="1353" height="305" key="GridCell.Tab.0.bottom" timestamp="1579370796842">
+    <state x="281" y="219" key="#SQL_Dialects" timestamp="1579374165786">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
-    <state width="1353" height="305" key="GridCell.Tab.0.bottom/0.0.2752.1112@0.0.2752.1112" timestamp="1579370796842" />
-    <state width="1353" height="305" key="GridCell.Tab.0.center" timestamp="1579370796842">
+    <state x="281" y="219" key="#SQL_Dialects/0.0.2752.1112@0.0.2752.1112" timestamp="1579374165786" />
+    <state x="281" y="219" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1579372963464">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
-    <state width="1353" height="305" key="GridCell.Tab.0.center/0.0.2752.1112@0.0.2752.1112" timestamp="1579370796842" />
-    <state width="1353" height="305" key="GridCell.Tab.0.left" timestamp="1579370796842">
+    <state x="281" y="219" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2752.1112@0.0.2752.1112" timestamp="1579372963464" />
+    <state width="1875" height="170" key="GridCell.Tab.0.bottom" timestamp="1579394131461">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
-    <state width="1353" height="305" key="GridCell.Tab.0.left/0.0.2752.1112@0.0.2752.1112" timestamp="1579370796842" />
-    <state width="1353" height="305" key="GridCell.Tab.0.right" timestamp="1579370796842">
+    <state width="1875" height="170" key="GridCell.Tab.0.bottom/0.0.2752.1112@0.0.2752.1112" timestamp="1579394131461" />
+    <state width="1875" height="170" key="GridCell.Tab.0.center" timestamp="1579394131461">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
-    <state width="1353" height="305" key="GridCell.Tab.0.right/0.0.2752.1112@0.0.2752.1112" timestamp="1579370796842" />
-    <state x="646" y="270" key="SettingsEditor" timestamp="1579370987475">
+    <state width="1875" height="170" key="GridCell.Tab.0.center/0.0.2752.1112@0.0.2752.1112" timestamp="1579394131461" />
+    <state width="1875" height="170" key="GridCell.Tab.0.left" timestamp="1579394131461">
       <screen x="0" y="0" width="2752" height="1112" />
     </state>
-    <state x="646" y="270" key="SettingsEditor/0.0.2752.1112@0.0.2752.1112" timestamp="1579370987475" />
+    <state width="1875" height="170" key="GridCell.Tab.0.left/0.0.2752.1112@0.0.2752.1112" timestamp="1579394131461" />
+    <state width="1875" height="170" key="GridCell.Tab.0.right" timestamp="1579394131461">
+      <screen x="0" y="0" width="2752" height="1112" />
+    </state>
+    <state width="1875" height="170" key="GridCell.Tab.0.right/0.0.2752.1112@0.0.2752.1112" timestamp="1579394131461" />
+    <state x="646" y="270" key="SettingsEditor" timestamp="1579393643774">
+      <screen x="0" y="0" width="2752" height="1112" />
+    </state>
+    <state x="646" y="270" key="SettingsEditor/0.0.2752.1112@0.0.2752.1112" timestamp="1579393643774" />
+    <state x="764" y="450" width="322" height="233" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1" timestamp="1579378685460">
+      <screen x="0" y="0" width="2752" height="1112" />
+    </state>
+    <state x="764" y="450" width="322" height="233" key="com.intellij.database.actions.DdlActions$DeleteProvider2$1/0.0.2752.1112@0.0.2752.1112" timestamp="1579378685460" />
+    <state x="405" y="202" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog" timestamp="1579375481746">
+      <screen x="0" y="0" width="2752" height="1112" />
+    </state>
+    <state x="405" y="202" key="com.intellij.database.view.ui.AbstractDbRefactoringDialog/0.0.2752.1112@0.0.2752.1112" timestamp="1579375481746" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/csgoanalytics$json2sql.coverage" NAME="json2sql Coverage Results" MODIFIED="1579372021888" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

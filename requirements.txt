@@ -1,1 +1,4 @@
 pandas
+jupyter
+Psycopg2
+sqlalchemy
