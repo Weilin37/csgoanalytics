@@ -62,3 +62,23 @@ class player:
             per_game_accuracy.append(1 - miss_prop)
         
         return np.array(per_game_accuracy)
+
+
+
+    # conditioning:
+    # role
+    # combat stats when playing down/up in terms of team equipment values
+        # sub-idea, stats when engaging 1v1 against opponent with superior/inferior equipment
+    # combat stats at different distances
+    # shooting, clear line of sight, through smoke, through obstacle
+    # location/scenario specific, e.g. entering/defending A site
+
+
+
+    # stats:
+    # accuracy
+    # add something smoke related, the number opponent vision obscured (meh)
+    # incendiary/molotov, path blocked, damage done
+    # net +/-
+    # some measure of "value" given value of equipment
+    # success probability under certain scenarios
