@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/csv"
-
 	//"fmt"
 	"os"
 	"strconv"
@@ -25,28 +24,83 @@ func main() {
 	checkError(err)
 
 	p := dem.NewParser(f)
+	// Parameters
+	// How many every frames to capture
+	var CaptureRate = 10
 
 	// Output variables
 	var PlayerOutput []Output
 	var SpottedOutput []Output
-	var CombatOutput []Output
+	var ShootOutput []Output
+	var HurtOutput []Output
 
 
 	// Register event handlers
 	p.RegisterEventHandler(func(e events.WeaponFire) {
-		var combatData [][]string
-		var WeaponFire = []string {
-			strconv.Itoa(p.CurrentFrame()),
-			e.Shooter.Name,
-			strconv.FormatInt(int64(e.Weapon.Type), 10),
-		}
+		if p.GameState().IsMatchStarted() == true {
+			var shootData [][]string
 
-		combatData = append(combatData, WeaponFire)
-		oCombat := Output {
-			Frame: p.CurrentFrame(),
-			Players: combatData,
+			var WeaponFire = []string{
+				strconv.Itoa(p.CurrentFrame()),
+				e.Shooter.Name,
+				strconv.FormatInt(int64(e.Weapon.Type), 10),
+			}
+
+			shootData = append(shootData, WeaponFire)
+			oShoot := Output{
+				Frame:   p.CurrentFrame(),
+				Players: shootData,
+			}
+			ShootOutput = append(ShootOutput, oShoot)
+
+			if p.CurrentFrame()%CaptureRate != 0 {
+				var playersData [][]string
+				for _, player := range p.GameState().Participants().Playing() {
+					playersData = append(playersData, extractPlayerData(p.CurrentFrame(), player))
+				}
+				oPlayer := Output{
+					Frame:   p.CurrentFrame(),
+					Players: playersData,
+				}
+				PlayerOutput = append(PlayerOutput, oPlayer)
+			}
 		}
-		CombatOutput = append(CombatOutput, oCombat)
+	})
+
+	p.RegisterEventHandler(func(e events.PlayerHurt) {
+		if p.GameState().IsMatchStarted() && e.Attacker != nil {
+			var hurtData [][]string
+
+			var WeaponFire = []string{
+				strconv.Itoa(p.CurrentFrame()),
+				e.Attacker.Name,
+				e.Player.Name,
+				strconv.FormatInt(int64(e.Health), 10),
+				strconv.FormatInt(int64(e.Armor), 10),
+				strconv.FormatInt(int64(e.Weapon.Type), 10),
+				strconv.FormatInt(int64(e.HealthDamage), 10),
+				strconv.FormatInt(int64(e.ArmorDamage), 10),
+				strconv.FormatInt(int64(e.HitGroup), 10),
+			}
+			hurtData = append(hurtData, WeaponFire)
+			oHurt := Output{
+				Frame:   p.CurrentFrame(),
+				Players: hurtData,
+			}
+			HurtOutput = append(HurtOutput, oHurt)
+
+			if p.CurrentFrame()%CaptureRate != 0 {
+				var playersData [][]string
+				for _, player := range p.GameState().Participants().Playing() {
+					playersData = append(playersData, extractPlayerData(p.CurrentFrame(), player))
+				}
+				oPlayer := Output{
+					Frame:   p.CurrentFrame(),
+					Players: playersData,
+				}
+				PlayerOutput = append(PlayerOutput, oPlayer)
+			}
+		}
 	})
 
 	// parse frame by frame
@@ -60,13 +114,12 @@ func main() {
 		var spottedData [][]string
 
 		for _, player := range gs.Participants().Playing() {
-			if gs.IsMatchStarted() == true {
+			if gs.IsMatchStarted() == true && frame%CaptureRate == 0 {
 				playersData = append(playersData, extractPlayerData(frame, player))
 				var playersSpotted = gs.Participants().SpottersOf(player)
 				if len(playersSpotted) > 0 {
 					spottedData = append(spottedData, extractSpottedData(frame, player, playersSpotted))
 				}
-				//fmt.Println(spottedData)
 			}
 		}
 
@@ -90,10 +143,14 @@ func main() {
 	err = csvExportSpottedData(SpottedOutput)
 	checkError(err)
 
-	err = csvExportCombatData(CombatOutput)
+	err = csvExportShootData(ShootOutput)
+	checkError(err)
+
+	err = csvExportHurtData(HurtOutput)
 	checkError(err)
 }
 
+// Event extraction
 func extractSpottedData(frame int, player *common.Player, spottedPlayers []*common.Player) []string {
 	var spottedPlayersStringArray []string
 	for _, spottedPlayer := range spottedPlayers {
@@ -108,11 +165,11 @@ func extractSpottedData(frame int, player *common.Player, spottedPlayers []*comm
 }
 
 func extractPlayerData(frame int, player *common.Player) []string {
-	var wepType common.EquipmentType
+	var wepType string
 	if wep := player.ActiveWeapon(); wep != nil {
-		wepType = wep.Type
+		wepType = strconv.FormatInt(int64(wep.Type),10)
 	} else {
-		wepType = common.EqUnknown
+		wepType = "Unknown"
 	}
 
 	return []string{
@@ -135,7 +192,7 @@ func extractPlayerData(frame int, player *common.Player) []string {
 		strconv.Itoa(player.Armor()),
 		strconv.Itoa(player.Money()),
 		strconv.Itoa(player.EquipmentValueCurrent()),
-		strconv.FormatInt(int64(wepType),10),
+		wepType,
 
 		strconv.FormatFloat(float64(player.FlashDuration), 'G', -1, 64),
 
@@ -151,7 +208,6 @@ func extractPlayerData(frame int, player *common.Player) []string {
 		strconv.FormatBool(player.IsReloading),
 		strconv.FormatBool(player.HasDefuseKit()),
 		strconv.FormatBool(player.HasHelmet()),
-		strconv.FormatBool(player.HasDefuseKit()),
 
 		strconv.Itoa(player.Kills()),
 		strconv.Itoa(player.Deaths()),
@@ -162,6 +218,8 @@ func extractPlayerData(frame int, player *common.Player) []string {
 	}
 }
 
+
+// CSV Export
 func csvExportPlayerData(data []Output) error {
 	file, err := os.OpenFile("resultPlayer.csv", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	defer file.Close()
@@ -178,7 +236,7 @@ func csvExportPlayerData(data []Output) error {
 		"Velocity_X", "Velocity_Y", "Velocity_Z", "ViewDirectionX", "ViewDirectionY",
 		"Team", "Hp", "Armor", "Money", "CurrentEquipmentValue", "ActiveWeapon",
 		"FlashDuration", "IsAlive", "IsAirborne", "IsDucking", "IsScoped", "IsWalking", "IsInBombZone", "IsBlinded", "IsDefusing", "IsPlanting", "IsReloading",
-		"HasDefuseKit", "HasHelmet", "HasDefuseKit",
+		"HasDefuseKit", "HasHelmet",
 		"Kills", "Deaths", "Assists", "Score", "MVPs", "CashSpentThisRound",
 	}
 	if err := writer.Write(header); err != nil {
@@ -229,8 +287,8 @@ func csvExportSpottedData(data []Output) error {
 	return nil
 }
 
-func csvExportCombatData(data []Output) error {
-	file, err := os.OpenFile("resultCombat.csv", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+func csvExportShootData(data []Output) error {
+	file, err := os.OpenFile("resultShoot.csv", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	defer file.Close()
 	if err != nil {
 		return err
@@ -260,6 +318,38 @@ func csvExportCombatData(data []Output) error {
 	return nil
 }
 
+func csvExportHurtData(data []Output) error {
+	file, err := os.OpenFile("resultHurt.csv", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	defer file.Close()
+	if err != nil {
+		return err
+	}
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	// header
+	header := []string{
+		"Frame", "Shooter", "Victim", "VictimHealth", "VictimArmor", "ShooterWeapon", "VictimHealthDamage","VictimArmorDamage", "HitGroup",
+	}
+	if err := writer.Write(header); err != nil {
+		return err // let's return errors if necessary, rather than having a one-size-fits-all error handler
+	}
+
+	// data
+	for _, frameData := range data {
+		for _, player := range frameData.Players {
+			err := writer.Write(player)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+// Error Checking and other Helpers
 func checkError(err error) {
 	if err != nil {
 		panic(err)
