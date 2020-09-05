@@ -114,8 +114,11 @@ func main() {
 		var spottedData [][]string
 
 		for _, player := range gs.Participants().Playing() {
-			if gs.IsMatchStarted() == true && frame%CaptureRate == 0 {
-				playersData = append(playersData, extractPlayerData(frame, player))
+			if gs.IsMatchStarted() {
+				if frame%CaptureRate == 0 {
+					playersData = append(playersData, extractPlayerData(frame, player))
+				}
+				
 				var playersSpotted = gs.Participants().SpottersOf(player)
 				if len(playersSpotted) > 0 {
 					spottedData = append(spottedData, extractSpottedData(frame, player, playersSpotted))
