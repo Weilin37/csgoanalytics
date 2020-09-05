@@ -118,7 +118,7 @@ func main() {
 				if frame%CaptureRate == 0 {
 					playersData = append(playersData, extractPlayerData(frame, player))
 				}
-				
+
 				var playersSpotted = gs.Participants().SpottersOf(player)
 				if len(playersSpotted) > 0 {
 					spottedData = append(spottedData, extractSpottedData(frame, player, playersSpotted))
@@ -271,7 +271,7 @@ func csvExportSpottedData(data []Output) error {
 
 	// header
 	header := []string{
-		"Frame", "PlayerSteamID", "PlayersSpotted",
+		"Frame", "PlayerName", "PlayersSpotted",
 	}
 	if err := writer.Write(header); err != nil {
 		return err // let's return errors if necessary, rather than having a one-size-fits-all error handler
