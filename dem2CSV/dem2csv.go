@@ -56,7 +56,7 @@ func main() {
 			if p.CurrentFrame()%CaptureRate != 0 {
 				var playersData [][]string
 				for _, player := range p.GameState().Participants().Playing() {
-					playersData = append(playersData, extractPlayerData(p.CurrentFrame(), player))
+					playersData = append(playersData, extractPlayerData(p.CurrentFrame(), player, p))
 				}
 				oPlayer := Output{
 					Frame:   p.CurrentFrame(),
@@ -92,7 +92,7 @@ func main() {
 			if p.CurrentFrame()%CaptureRate != 0 {
 				var playersData [][]string
 				for _, player := range p.GameState().Participants().Playing() {
-					playersData = append(playersData, extractPlayerData(p.CurrentFrame(), player))
+					playersData = append(playersData, extractPlayerData(p.CurrentFrame(), player, p))
 				}
 				oPlayer := Output{
 					Frame:   p.CurrentFrame(),
@@ -116,7 +116,7 @@ func main() {
 		for _, player := range gs.Participants().Playing() {
 			if gs.IsMatchStarted() {
 				if frame%CaptureRate == 0 {
-					playersData = append(playersData, extractPlayerData(frame, player))
+					playersData = append(playersData, extractPlayerData(frame, player, p))
 				}
 
 				var playersSpotted = gs.Participants().SpottersOf(player)
@@ -167,7 +167,7 @@ func extractSpottedData(frame int, player *common.Player, spottedPlayers []*comm
 	}
 }
 
-func extractPlayerData(frame int, player *common.Player) []string {
+func extractPlayerData(frame int, player *common.Player, p dem.Parser) []string {
 	var wepType string
 	if wep := player.ActiveWeapon(); wep != nil {
 		wepType = strconv.FormatInt(int64(wep.Type),10)
@@ -177,6 +177,8 @@ func extractPlayerData(frame int, player *common.Player) []string {
 
 	return []string{
 		strconv.Itoa(frame),
+		strconv.FormatInt(int64(p.GameState().TotalRoundsPlayed()+1), 10),
+		strconv.FormatFloat(float64(p.GameState().IngameTick())/p.TickRate(), 'G', -1, 64),
 		player.Name,
 		strconv.FormatUint(player.SteamID64,10),
 		strconv.FormatFloat(player.Position().X, 'G', -1, 64),
@@ -235,7 +237,7 @@ func csvExportPlayerData(data []Output) error {
 
 	// header
 	header := []string{
-		"Frame", "Name", "SteamID", "Position_X", "Position_Y", "Position_Z",
+		"Frame", "RoundNumber", "CurrentTime", "Name", "SteamID", "Position_X", "Position_Y", "Position_Z",
 		"Velocity_X", "Velocity_Y", "Velocity_Z", "ViewDirectionX", "ViewDirectionY",
 		"Team", "Hp", "Armor", "Money", "CurrentEquipmentValue", "ActiveWeapon",
 		"FlashDuration", "IsAlive", "IsAirborne", "IsDucking", "IsScoped", "IsWalking", "IsInBombZone", "IsBlinded", "IsDefusing", "IsPlanting", "IsReloading",
