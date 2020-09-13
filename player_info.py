@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 import queries
 
+# NOTE This is currently deprecated due to table format being changed, but something similar will be needed in the future
+
 @attr.s
 class player:
     # Holds player data
@@ -72,6 +74,7 @@ class player:
     # combat stats at different distances
     # shooting, clear line of sight, through smoke, through obstacle
     # location/scenario specific, e.g. entering/defending A site
+        # defending vs entering equal or unequal numbers
 
 
 
