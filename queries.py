@@ -82,32 +82,82 @@ class queries:
     # NOTE Both these identifiers will need to added in the future
     def player_bombsite_query(self):
         self.query = """
-                    SELECT
-                        "Position_X",
-                        "Position_Y",
-                        "Position_Z"
+                    SELECT *
                     FROM public."{player_table}"
                     WHERE "IsInBombZone" = true""".format(player_table=player_table)
 
-    # build a query to take everything from player_table
+
+
+    # build a query for finding frame where a player is both IsInBombZone and shooting
     # NOTE this does not include any identifier for map or match ID, since there is only 1 demo in the database for now
     # NOTE Both these identifiers will need to added in the future
-    def player_all_query(self):
-        self.query = """
-                    SELECT *
-                    FROM public."{player_table}"
-                    """.format(player_table=player_table)
+    def bombzone_shooting_query(self, bombsites, frame_width):
+        # define the box that includes the extra frame_width around the bombsite
+        site1_min_X = bombsites[0][0][0] - frame_width
+        site1_max_X = bombsites[0][0][1] + frame_width
+        site1_min_Y = bombsites[0][1][0] - frame_width
+        site1_max_Y = bombsites[0][1][1] + frame_width
 
-    # build a query to take everything from shoot_table
-    # NOTE this does not include any identifier for map or match ID, since there is only 1 demo in the database for now
-    # NOTE Both these identifiers will need to added in the future
-    def shoot_all_query(self):
-        self.query = """
-                    SELECT *
-                    FROM public."{shoot_table}"
-                    """.format(shoot_table=shoot_table)
+        site2_min_X = bombsites[1][0][0] - frame_width
+        site2_max_X = bombsites[1][0][1] + frame_width
+        site2_min_Y = bombsites[1][1][0] - frame_width
+        site2_max_Y = bombsites[1][1][1] + frame_width
 
-    
+        self.query = """
+                    SELECT
+                        public."{player_table}"."Frame" AS "Frame",
+                        public."{player_table}"."RoundNumber" AS "RoundNumber",
+                        public."{player_table}"."CurrentTime" AS "CurrentTime",
+                        public."{player_table}"."Position_X" AS "Position_X",
+                        public."{player_table}"."Position_Y" AS "Position_Y",
+                        public."{player_table}"."Position_Z" AS "Position_Z",
+                        public."{shoot_table}"."Shooter" AS "Shooter",
+                        public."{shoot_table}"."Weapon" AS "Weapon"
+                    FROM
+                        public."{player_table}" INNER JOIN public."{shoot_table}"
+                        ON ((public."{player_table}"."Frame" = public."{shoot_table}"."Frame") AND
+                            (public."{player_table}"."Name" = public."{shoot_table}"."Shooter"))
+                    WHERE
+                        public."{shoot_table}"."Weapon" != 405 AND
+
+                        (((public."{player_table}"."Position_X" BETWEEN {site1_min_X} AND {site1_max_X}) AND
+                          (public."{player_table}"."Position_Y" BETWEEN {site1_min_Y} AND {site1_max_Y}))
+                          OR
+                         ((public."{player_table}"."Position_X" BETWEEN {site2_min_X} AND {site2_max_X}) AND
+                          (public."{player_table}"."Position_Y" BETWEEN {site2_min_Y} AND {site2_max_Y})))
+
+                    ORDER BY "Frame"
+                    """.format(player_table=player_table, shoot_table=shoot_table,
+                               site1_min_X = site1_min_X, site1_max_X = site1_max_X,
+                               site1_min_Y = site1_min_Y, site1_max_Y = site1_max_Y,
+                               site2_min_X = site2_min_X, site2_max_X = site2_max_X,
+                               site2_min_Y = site2_min_Y, site2_max_Y = site2_max_Y)
+
+
+    def OLD_bombzone_shooting_query(self):
+
+        self.query = """
+                    SELECT
+                        public."{player_table}"."Frame" AS "Frame",
+                        public."{player_table}"."RoundNumber" AS "RoundNumber",
+                        public."{player_table}"."CurrentTime" AS "CurrentTime",
+                        public."{player_table}"."Position_X" AS "Position_X",
+                        public."{player_table}"."Position_Y" AS "Position_Y",
+                        public."{player_table}"."Position_Z" AS "Position_Z",
+                        public."{shoot_table}"."Shooter" AS "Shooter",
+                        public."{shoot_table}"."Weapon" AS "Weapon"
+                    FROM
+                        public."{player_table}" INNER JOIN public."{shoot_table}"
+                        ON ((public."{player_table}"."Frame" = public."{shoot_table}"."Frame") AND
+                            (public."{player_table}"."Name" = public."{shoot_table}"."Shooter"))
+                    WHERE
+                        public."{shoot_table}"."Weapon" != 405 AND
+                        public."{player_table}"."IsInBombZone" = true
+
+                    ORDER BY "Frame"
+                    """.format(player_table=player_table, shoot_table=shoot_table)
+
+
     # execute query to pandas dataframe
     def execute_query(self):
         return pd.read_sql_query(self.query, connection)
