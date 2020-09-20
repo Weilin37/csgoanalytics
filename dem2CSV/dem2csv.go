@@ -34,6 +34,8 @@ func main() {
 	var ShootOutput []Output
 	var HurtOutput []Output
 
+	// Parse Headers
+	//p.Header().MapName
 
 	// Register event handlers
 	p.RegisterEventHandler(func(e events.WeaponFire) {
@@ -223,6 +225,12 @@ func extractPlayerData(frame int, player *common.Player, p dem.Parser) []string 
 	}
 }
 
+func extractMetaData(p dem.Parser) []string {
+	return []string {
+		p.Header().MapName,
+		p.Header().,
+	}
+}
 
 // CSV Export
 func csvExportPlayerData(data []Output) error {
