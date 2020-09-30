@@ -10,12 +10,19 @@ import (
 	dem "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs"
 	"github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	"github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/events"
+	"github.com/segmentio/ksuid"
 )
 
 type Output struct {
+	id string
 	Frame   int
 	Events  interface{}
 	Players [][]string
+}
+
+type SingleOutput struct {
+	id string
+	Entities [][]string
 }
 
 func main() {
@@ -27,15 +34,21 @@ func main() {
 	// Parameters
 	// How many every frames to capture
 	var CaptureRate = 10
+	//unique demoID
+	var demoid = ksuid.New().String()
 
 	// Output variables
+	var HeaderOutput []SingleOutput
+	var EntitiesOutput []SingleOutput
 	var PlayerOutput []Output
 	var SpottedOutput []Output
 	var ShootOutput []Output
 	var HurtOutput []Output
 
-	// Parse Headers
-	//p.Header().MapName
+	// Flag Variables
+	var capturedEntities bool
+	capturedEntities = false
+	var entitiesData [][]string
 
 	// Register event handlers
 	p.RegisterEventHandler(func(e events.WeaponFire) {
@@ -43,6 +56,7 @@ func main() {
 			var shootData [][]string
 
 			var WeaponFire = []string{
+				demoid,
 				strconv.Itoa(p.CurrentFrame()),
 				e.Shooter.Name,
 				strconv.FormatInt(int64(e.Weapon.Type), 10),
@@ -50,6 +64,7 @@ func main() {
 
 			shootData = append(shootData, WeaponFire)
 			oShoot := Output{
+				id: demoid,
 				Frame:   p.CurrentFrame(),
 				Players: shootData,
 			}
@@ -58,9 +73,10 @@ func main() {
 			if p.CurrentFrame()%CaptureRate != 0 {
 				var playersData [][]string
 				for _, player := range p.GameState().Participants().Playing() {
-					playersData = append(playersData, extractPlayerData(p.CurrentFrame(), player, p))
+					playersData = append(playersData, extractPlayerData(demoid, p.CurrentFrame(), player, p))
 				}
 				oPlayer := Output{
+					id: demoid,
 					Frame:   p.CurrentFrame(),
 					Players: playersData,
 				}
@@ -74,6 +90,7 @@ func main() {
 			var hurtData [][]string
 
 			var WeaponFire = []string{
+				demoid,
 				strconv.Itoa(p.CurrentFrame()),
 				e.Attacker.Name,
 				e.Player.Name,
@@ -86,6 +103,7 @@ func main() {
 			}
 			hurtData = append(hurtData, WeaponFire)
 			oHurt := Output{
+				id: demoid,
 				Frame:   p.CurrentFrame(),
 				Players: hurtData,
 			}
@@ -94,9 +112,10 @@ func main() {
 			if p.CurrentFrame()%CaptureRate != 0 {
 				var playersData [][]string
 				for _, player := range p.GameState().Participants().Playing() {
-					playersData = append(playersData, extractPlayerData(p.CurrentFrame(), player, p))
+					playersData = append(playersData, extractPlayerData(demoid, p.CurrentFrame(), player, p))
 				}
 				oPlayer := Output{
+					id: demoid,
 					Frame:   p.CurrentFrame(),
 					Players: playersData,
 				}
@@ -117,23 +136,33 @@ func main() {
 
 		for _, player := range gs.Participants().Playing() {
 			if gs.IsMatchStarted() {
+				if capturedEntities == false {
+					entitiesData = append(entitiesData, extractEntities(demoid, player))
+				}
+
 				if frame%CaptureRate == 0 {
-					playersData = append(playersData, extractPlayerData(frame, player, p))
+					playersData = append(playersData, extractPlayerData(demoid, frame, player, p))
 				}
 
 				var playersSpotted = gs.Participants().SpottersOf(player)
 				if len(playersSpotted) > 0 {
-					spottedData = append(spottedData, extractSpottedData(frame, player, playersSpotted))
+					spottedData = append(spottedData, extractSpottedData(demoid, frame, player, playersSpotted))
 				}
 			}
 		}
 
+		if gs.IsMatchStarted() && capturedEntities == false {
+			capturedEntities = true
+		}
+
 		oPlayer := Output{
+			id: demoid,
 			Frame:   frame,
 			Players: playersData,
 		}
 
 		oSpotted := Output{
+			id: demoid,
 			Frame:   frame,
 			Players: spottedData,
 		}
@@ -141,6 +170,27 @@ func main() {
 		PlayerOutput = append(PlayerOutput, oPlayer)
 		SpottedOutput = append(SpottedOutput, oSpotted)
 	}
+
+	var headerData [][]string
+	headerData = append(headerData, extractHeader(demoid, p))
+	oHeader := SingleOutput{
+		id: demoid,
+		Entities: headerData,
+	}
+	HeaderOutput = append(HeaderOutput, oHeader)
+
+
+	oEntities := SingleOutput{
+		id: demoid,
+		Entities: entitiesData,
+	}
+	EntitiesOutput = append(EntitiesOutput, oEntities)
+
+	err = csvExportEntitiesData(EntitiesOutput)
+	checkError(err)
+
+	err = csvExportHeaderData(HeaderOutput)
+	checkError(err)
 
 	err = csvExportPlayerData(PlayerOutput)
 	checkError(err)
@@ -155,21 +205,41 @@ func main() {
 	checkError(err)
 }
 
+// Header extraction
+func extractHeader(matchid string, p dem.Parser) []string {
+	return []string {
+		matchid,
+		p.Header().MapName,
+		strconv.FormatInt(int64(p.TickRate()),10),
+	}
+}
+
+// Entities extraction
+func extractEntities(matchid string, player *common.Player) []string {
+	return []string {
+		matchid,
+		strconv.FormatUint(player.SteamID64,10),
+		player.Name,
+		strconv.FormatInt(int64(player.Team),10),
+	}
+}
+
 // Event extraction
-func extractSpottedData(frame int, player *common.Player, spottedPlayers []*common.Player) []string {
+func extractSpottedData(matchid string, frame int, player *common.Player, spottedPlayers []*common.Player) []string {
 	var spottedPlayersStringArray []string
 	for _, spottedPlayer := range spottedPlayers {
 		spottedPlayersStringArray = append(spottedPlayersStringArray, spottedPlayer.Name)
 	}
 
 	return []string {
+		matchid,
 		strconv.Itoa(frame),
 		player.Name,
 		strings.Join(spottedPlayersStringArray, ", "),
 	}
 }
 
-func extractPlayerData(frame int, player *common.Player, p dem.Parser) []string {
+func extractPlayerData(matchid string, frame int, player *common.Player, p dem.Parser) []string {
 	var wepType string
 	if wep := player.ActiveWeapon(); wep != nil {
 		wepType = strconv.FormatInt(int64(wep.Type),10)
@@ -178,6 +248,7 @@ func extractPlayerData(frame int, player *common.Player, p dem.Parser) []string 
 	}
 
 	return []string{
+		matchid,
 		strconv.Itoa(frame),
 		strconv.FormatInt(int64(p.GameState().TotalRoundsPlayed()+1), 10),
 		strconv.FormatFloat(float64(p.GameState().IngameTick())/p.TickRate(), 'G', -1, 64),
@@ -225,14 +296,69 @@ func extractPlayerData(frame int, player *common.Player, p dem.Parser) []string 
 	}
 }
 
-func extractMetaData(p dem.Parser) []string {
-	return []string {
-		p.Header().MapName,
-		p.Header().,
+// CSV Export
+func csvExportHeaderData(data []SingleOutput) error {
+	file, err := os.OpenFile("resultHeader.csv", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	defer file.Close()
+	if err != nil {
+		return err
 	}
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	// header
+	header := []string{
+		"matchID", "mapName", "tickRate",
+	}
+	if err := writer.Write(header); err != nil {
+		return err // let's return errors if necessary, rather than having a one-size-fits-all error handler
+	}
+
+	// data
+	for _, frameData := range data {
+		for _, player := range frameData.Entities {
+			err := writer.Write(player)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
-// CSV Export
+func csvExportEntitiesData(data []SingleOutput) error {
+	file, err := os.OpenFile("resultEntities.csv", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	defer file.Close()
+	if err != nil {
+		return err
+	}
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	// header
+	header := []string{
+		"matchID", "steamID", "playerName", "team",
+	}
+	if err := writer.Write(header); err != nil {
+		return err // let's return errors if necessary, rather than having a one-size-fits-all error handler
+	}
+
+	// data
+	for _, frameData := range data {
+		for _, player := range frameData.Entities {
+			err := writer.Write(player)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 func csvExportPlayerData(data []Output) error {
 	file, err := os.OpenFile("resultPlayer.csv", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	defer file.Close()
@@ -245,7 +371,7 @@ func csvExportPlayerData(data []Output) error {
 
 	// header
 	header := []string{
-		"Frame", "RoundNumber", "CurrentTime", "Name", "SteamID", "Position_X", "Position_Y", "Position_Z",
+		"matchID", "Frame", "RoundNumber", "CurrentTime", "Name", "SteamID", "Position_X", "Position_Y", "Position_Z",
 		"Velocity_X", "Velocity_Y", "Velocity_Z", "ViewDirectionX", "ViewDirectionY",
 		"Team", "Hp", "Armor", "Money", "CurrentEquipmentValue", "ActiveWeapon",
 		"FlashDuration", "IsAlive", "IsAirborne", "IsDucking", "IsScoped", "IsWalking", "IsInBombZone", "IsBlinded", "IsDefusing", "IsPlanting", "IsReloading",
@@ -281,7 +407,7 @@ func csvExportSpottedData(data []Output) error {
 
 	// header
 	header := []string{
-		"Frame", "PlayerName", "PlayersSpotted",
+		"matchID", "Frame", "PlayerName", "PlayersSpotted",
 	}
 	if err := writer.Write(header); err != nil {
 		return err // let's return errors if necessary, rather than having a one-size-fits-all error handler
@@ -312,7 +438,7 @@ func csvExportShootData(data []Output) error {
 
 	// header
 	header := []string{
-		"Frame", "Shooter", "Weapon",
+		"matchID", "Frame", "Shooter", "Weapon",
 	}
 	if err := writer.Write(header); err != nil {
 		return err // let's return errors if necessary, rather than having a one-size-fits-all error handler
@@ -343,7 +469,7 @@ func csvExportHurtData(data []Output) error {
 
 	// header
 	header := []string{
-		"Frame", "Shooter", "Victim", "VictimHealth", "VictimArmor", "ShooterWeapon", "VictimHealthDamage","VictimArmorDamage", "HitGroup",
+		"matchID", "Frame", "Shooter", "Victim", "VictimHealth", "VictimArmor", "ShooterWeapon", "VictimHealthDamage","VictimArmorDamage", "HitGroup",
 	}
 	if err := writer.Write(header); err != nil {
 		return err // let's return errors if necessary, rather than having a one-size-fits-all error handler
