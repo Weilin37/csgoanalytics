@@ -2,6 +2,7 @@ import attr
 import numpy as np
 import pandas as pd
 import queries
+import query_filters
 from sklearn.cluster import KMeans
 
 @attr.s
@@ -9,6 +10,9 @@ class bombsite_situation:
     # Detect and hold data corresponding to bombsite situations
 
     # Attributes:
+    # filter_obj
+    filter_obj = attr.ib(type = query_filters.filter_info)
+
     # map_name: name of the map to detect bombsite situations on
     # bombsite_xyz: coordinates of when IsInBombZone is true for players
     # bombsites: a numpy array that stores approximate bombsite locations for the map
@@ -19,12 +23,16 @@ class bombsite_situation:
     # bomb_frames: keeps frames of shoot_data that are relevant bomb situations, closest frame from player_data, and index of relevant row in player_data
     bomb_frames = attr.ib(default = attr.Factory(list))
 
-    ### functions for populating bombsite situation attributes
 
+    ### functions for populating bombsite situation attributes
     # populate the bombsite_xyz attribute
     def populate_bombsite_xyz(self):
         bombsite_query = queries.queries()
-        bombsite_query.player_bombsite_query()
+        bombsite_query.player_bombsite_query(self.filter_obj)
+
+        print('populate_bombsite_xyz')
+        print(bombsite_query.query)
+
         self.bombsite_xyz = bombsite_query.execute_query()
 
     # populate the bombsites attribute
@@ -54,7 +62,7 @@ class bombsite_situation:
     # a frame from shoot_data is relevant if:
     # 1. the corresponding frame from player_data for the relevant player has this player IsInBombZone
     # 2. the active weapon is not 405, i.e. knife
-    def find_bombsite_frames(self, old):
+    def find_bombsite_frames(self):
 
         # populate bombsite first
         self.populate_bombsites()
@@ -63,11 +71,10 @@ class bombsite_situation:
         frame_around_site = 100
 
         bomb_shoot_query = queries.queries()
-        
-        # just testing old and newer version
-        if old:
-            bomb_shoot_query.OLD_bombzone_shooting_query()
-        else:
-            bomb_shoot_query.bombzone_shooting_query(self.bombsites, frame_around_site)
+        bomb_shoot_query.bombzone_shooting_query(self.bombsites, frame_around_site, 
+                                                 self.filter_obj)
+
+        print('find_bombsite_frames')
+        print(bomb_shoot_query.query)
         
         self.bomb_frames = bomb_shoot_query.execute_query()
