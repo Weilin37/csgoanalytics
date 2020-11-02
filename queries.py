@@ -79,8 +79,6 @@ class queries:
 
 
     # build a query for location data from player_table for when players are in the bombsite
-    # NOTE this does not include any identifier for map or match ID, since there is only 1 demo in the database for now
-    # NOTE Both these identifiers will need to added in the future
     def player_bombsite_query(self, filter_obj):
         # define filter for WHERE clause
         where_filter = ''
@@ -100,8 +98,6 @@ class queries:
 
 
     # build a query for finding frame where a player is both IsInBombZone and shooting
-    # NOTE this does not include any identifier for map or match ID, since there is only 1 demo in the database for now
-    # NOTE Both these identifiers will need to added in the future
     def bombzone_shooting_query(self, bombsites, frame_width, filter_obj):
         # define filter for WHERE clause
         where_filter = ''
@@ -158,6 +154,26 @@ class queries:
                                site2_min_Y = site2_min_Y, site2_max_Y = site2_max_Y,
                                where_filter = where_filter)
 
+    # build a query for getting frames between certain range from player_table
+    # includes first_frame, but excludes last_frame
+    def player_frame_range_query(self, first_frame, last_frame, filter_obj):
+        # define filter for WHERE clause
+        where_filter = ''
+
+        if len(filter_obj.match_id) > 0:
+            where_filter += """AND "matchID" = '{match_id}'""".format(match_id = filter_obj.match_id)
+        if len(filter_obj.player) > 0:
+            where_filter += """ AND "Name" = '{player}'""".format(player = filter_obj.player)
+
+        self.query = """
+                    SELECT *
+                    FROM public."{player_table}"
+                    WHERE
+                        "Frame" >= {first_frame} AND "Frame" < {last_frame}
+                        {where_filter}
+                    ORDER BY "Frame", "Name"
+                    """.format(player_table = player_table, where_filter = where_filter,
+                                                 first_frame = first_frame, last_frame = last_frame)
 
     # execute query to pandas dataframe
     def execute_query(self):
